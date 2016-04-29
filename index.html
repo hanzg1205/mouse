@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>鼠标拖拽</title>
+</head>
+<style>
+body,ul,li{
+	margin:0;
+	padding:0;
+	list-style: none;
+}
+	.box{
+		width: 100%;
+		height:500px;
+		overflow: hidden;
+	}
+	.inner{
+		width: 500%;
+		height:100%;
+	}
+	.inner li{
+		width: 20%;
+		height:100%;
+		text-align: center;
+		line-height: 600px;
+		font-size: 200px;
+		color:#fff;
+		float: left;
+	}
+	.inner li:nth-child(1){
+		background: red;
+	}
+	.inner li:nth-child(2){
+		background: green;
+	}
+	.inner li:nth-child(3){
+		background: yellow;
+	}
+
+	.inner li:nth-child(4){
+		background: purple;
+	}
+	.inner li:nth-child(5){
+		background: blue;
+	}
+</style>
+<script>
+	window.onload=function(){
+		var box=document.querySelector('.box');
+		var inner=box.querySelector('.inner');
+		var lis=inner.querySelectorAll('li');
+		var iw=box.offsetWidth;
+		var i=0;
+		var moveX=0;
+		var isTouch='ontouchstart' in window;
+		if(isTouch){
+			var mousedown="touchstart";
+			var mousemove="touchmove";
+			var mouseup="touchend";
+		}else{
+			var mousedown="mousedown";
+			var mousemove="mousemove";
+			var mouseup="mouseup";
+		}
+		inner.addEventListener(mousedown,function(e){
+			e.preventDefault();	
+			var stime=e.timeStamp;
+			var e=isTouch?e.changedTouches[0]:e;
+			var dx=e.clientX;
+			var lenX;
+			var mx=0;
+			var dir;
+			inner.style.transition="none";
+			function Moves(e){
+				var e=isTouch?e.changedTouches[0]:e;
+				mx=e.clientX;
+				lenX=mx-dx;
+				dir=lenX>0?"right":"left";
+				inner.style.transform="translate3d("+(moveX+lenX)+"px,0,0)";
+			}
+			function Ups(e){
+			var etime=e.timeStamp;
+			var e=isTouch?e.changedTouches[0]:e;
+			var let=etime-stime;
+			if(Math.abs(lenX)>iw/2||(let<100&&(Math.abs(lenX)>30))){
+				if(dir=="right"){
+					i--;
+				}else if(dir=="left"){
+					i++;
+				}
+				if(i<0){
+					i=0;
+				}
+				else if(i>lis.length-1){
+					i=lis.length-1;
+				}
+				moveX=-i*iw;
+				inner.style.transition="transform .3s";
+				inner.style.transform="translate3d("+moveX+"px,0,0)";
+			}
+			else{
+				moveX=-i*iw;
+				inner.style.transition="transform .3s";
+				inner.style.transform="translate3d("+moveX+"px,0,0)";
+			}
+			document.removeEventListener(mousemove,Moves);
+			document.removeEventListener(mouseup,Ups);
+			}
+			document.addEventListener(mousemove,Moves);
+			document.addEventListener(mouseup,Ups);	
+				
+		})
+	}
+</script>
+<body>
+	<div class="box">
+		<ul class="inner">
+			<li>01</li>
+			<li>02</li>
+			<li>03</li>
+			<li>04</li>
+			<li>05</li>
+		</ul>
+	</div>
+</body>
+</html>
